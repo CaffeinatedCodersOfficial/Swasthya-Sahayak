@@ -1,13 +1,27 @@
 import React from 'react'
 import doctor from "../../public/doctor.jpg"
-import { FaArrowRight, FaHeartbeat, FaUserMd } from "react-icons/fa";
-import { GiMedicines } from "react-icons/gi";
+import { FaArrowRight } from "react-icons/fa6";
 import { motion } from "framer-motion";
+
+const generateStars = (count) => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100, // random left %
+    top: Math.random() * 100, // random top %
+    size: Math.random() * 3 + 2, // random size (2px - 5px)
+    delay: Math.random() * 3, // random twinkle delay
+  }));
+};
+
+const stars = generateStars(25); // generate 25 stars
 
 const IntroPage = () => {
   return (
     <div className='w-full h-[100dvh] bg-primaryBlue overflow-hidden relative'>
       
+      {/* Animated Stars */}
+      
+
       {/* Top Image Section */}
       <motion.div 
         initial={{ y: -100, opacity: 0 }}
@@ -17,10 +31,26 @@ const IntroPage = () => {
         className='w-full h-2/6 rounded-b-full bg-top bg-cover scale-125'
       ></motion.div>
 
-  
-
       {/* Middle Content */}
-      <div className='w-full h-3/6 bg-transparent pt-16'>
+      <div className='w-full h-3/6 bg-transparent pt-14 relative'>
+      {stars.map((star) => (
+        <motion.div
+          key={star.id}
+          className="absolute rounded-full bg-white z-"
+          style={{
+            width: `${star.size}px`,
+            height: `${star.size}px`,
+            left: `${star.left}%`,
+            top: `${star.top}%`,
+          }}
+          animate={{ opacity: [0.2, 1, 0.2] }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            delay: star.delay,
+          }}
+        />
+      ))}
         <motion.h1 
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
