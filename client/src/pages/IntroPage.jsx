@@ -1,44 +1,71 @@
 import React from 'react'
-import { MdOutlineArrowOutward } from "react-icons/md";
-import { Link } from 'react-router-dom';
-import VantaCells from '../VantaBacgrounds/VantaCells';
+import doctor from "../../public/doctor.jpg"
+import { FaArrowRight, FaHeartbeat, FaUserMd } from "react-icons/fa";
+import { GiMedicines } from "react-icons/gi";
+import { motion } from "framer-motion";
 
 const IntroPage = () => {
   return (
-    <div className='bg-blue w-full h-screen relative flex justify-center items-center'>
-      <VantaCells/>
+    <div className='w-full h-[100dvh] bg-primaryBlue overflow-hidden relative'>
+      
+      {/* Top Image Section */}
+      <motion.div 
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1 }}
+        style={{ backgroundImage: `url(${doctor})` }} 
+        className='w-full h-2/6 rounded-b-full bg-top bg-cover scale-125'
+      ></motion.div>
 
-      <div className='absolute rounded-3xl flex flex-col justify-center items-center bg-transparent backdrop-blur-sm px-10 py-20 border-cardbggray/50 border-2'>
-        <h1 className='bg-transparent text-white text-5xl mb-5'>Transforming<span className='font-storyscript bg-transparent text-primaryRed'> Healthcare</span> With</h1>
-        <div className="bg-gradient-to-r from-red-700 via-red-500 to-red-800 bg-clip-text text-transparent text-7xl font-archivo font-black mb-10">
-          Swasthya Saarthi
-        </div>
+  
 
-        <div className="bg-transparent flex justify-center items-center gap-10">
-          {/* Sign Up Button */}
-          <div className="bg-white/75 rounded-full p-2 transition-all duration-300 hover:bg-blue-500">
-            <Link to="/register" className="bg-cardbggray px-5 py-4 rounded-full text-semibold text-xl flex justify-center items-center gap-2 transition-all duration-300 hover:bg-primaryBlue hover:text-white group">
-              Sign Up
-              <div className="bg-white p-2 rounded-full transition-all duration-300 group-hover:bg-primaryBlue">
-                <MdOutlineArrowOutward className="bg-transparent text-xl transition-all duration-300 group-hover:text-white" />
-              </div>
-            </Link>
-          </div>
+      {/* Middle Content */}
+      <div className='w-full h-3/6 bg-transparent pt-16'>
+        <motion.h1 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className='bg-transparent text-center text-white font-bold text-2xl px-8'
+        >
+          Faster Appointments, Smarter Queues
+        </motion.h1>
 
-          {/* Sign In Button */}
-          <div className="bg-white/75 rounded-full p-2 transition-all duration-300 hover:bg-blue-500">
-            <Link to="/login" className="bg-cardbggray px-5 py-4 rounded-full text-semibold text-xl flex justify-center items-center gap-2 transition-all duration-300 hover:bg-primaryBlue hover:text-white group">
-              Sign In
-              <div className="bg-primaryBlue text-white p-2 rounded-full transition-all duration-300 group-hover:bg-primaryBlue">
-                <MdOutlineArrowOutward className="bg-transparent text-xl transition-all duration-300 group-hover:text-white" />
-              </div>
-            </Link>
-          </div>
-        </div>
+        <motion.p 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.2 }}
+          className='bg-transparent text-cardbggray/75 px-8 mt-3 text-center'
+        >
+          Book doctor appointments, skip long queues, and access blood banks easily — all in one place.
+        </motion.p>
 
-
+        {/* Button with animation */}
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.4, delay: 0.4 }}
+          className='flex justify-center items-center mt-8 bg-transparent'
+        >
+          <button className='bg-[#00162D] px-5 py-3 gap-2 flex justify-center items-center rounded-full text-white hover:opacity-75'>
+            Get Started 
+            <div className='bg-white rounded-full p-2'>
+              <FaArrowRight className='text-black rounded-full'/>
+            </div>
+          </button>
+        </motion.div>
       </div>
-        
+
+      {/* Footer Section */}
+      <motion.div 
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1.5, delay: 0.6 }}
+        className='w-full h-2/6 rounded-t-full scale-125 bg-[#00162D] flex justify-center items-start text-white'
+      >
+        <h1 className='bg-transparent mt-12 text-lg font-semibold'>
+          Swasthya Sahayak
+        </h1>
+      </motion.div>
     </div>
   )
 }

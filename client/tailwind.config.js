@@ -8,7 +8,7 @@ export default {
         primaryRed: "#ef1919",
         mainbg: "#e9f1fc",
         white: "#ffffff",
-        black: "1d1d1d",
+        minblack: "1d1d1d",
         cardbgwhite: "#ffffff",
         cardbggray: "#ececec",
       },
