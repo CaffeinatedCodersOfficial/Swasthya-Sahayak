@@ -15,7 +15,7 @@ const LoginPage = () => {
         <div className='backdrop-blur-md bg-transparent px-10 py-10 rounded-3xl flex justify-center items-center flex-col hover:border-2 hover:border-white/25'>
           <h3 className='bg-transparent text-white text-3xl font-semibold mb-10'>Register Now</h3>
 
-          <form className='bg-transparent w-[400px]'>
+          <form className='bg-transparent w-full md:w-[400px]'>
             <label className='flex flex-col bg-transparent text-white gap-2 mb-8'>
               Name
               <input className='bg-transparent rounded-xl border-2 border-white/25 p-3 outline-none focus:border-white' placeholder='Enter your name...'/>
