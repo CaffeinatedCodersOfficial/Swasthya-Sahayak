@@ -7,7 +7,7 @@ export const AppContext = createContext();
 axios.defaults.withCredentials = true; // set once
 
 export const AppContextProvider = (props) => {
-  const backendUrl = "http://localhost:4000";
+  const backendUrl = "https://swasthya-sahayak.onrender.com";
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
 
