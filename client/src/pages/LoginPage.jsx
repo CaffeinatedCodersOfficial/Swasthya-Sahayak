@@ -4,20 +4,22 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+
 const LoginPage = () => {
   const { backendUrl, isLoggedIn, userData } = useContext(AppContext);
   const navigate = useNavigate();
 
   // Form states
   const [role, setRole] = useState("Patient");
-  const [state, setState] = useState("Login");
-  const [step, setStep] = useState("form");
+  const [state, setState] = useState("Login"); // Login | Register | ForgotPassword | VerifyResetOtp | ResetPassword
+  const [step, setStep] = useState("form"); // form | otp (for register only)
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [otpAttempt, setOtpAttempt] = useState(1);
-  const [timer, setTimer] = useState(0)
+  const [timer, setTimer] = useState(0);
 
   // UI states
   const [loading, setLoading] = useState(false);
@@ -31,6 +33,7 @@ const LoginPage = () => {
     }
   };
 
+  // 🔹 Login / Register submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -46,11 +49,11 @@ const LoginPage = () => {
         if (data.success) {
           toast.success(data.message);
           setStep("otp"); // move to OTP step
-          setTimer(30)
+          setTimer(30);
         } else {
           toast.error(data.message);
         }
-      } else {
+      } else if (state === "Login") {
         const { data } = await axios.post(backendUrl + "/api/auth/login", {
           email,
           password,
@@ -71,6 +74,7 @@ const LoginPage = () => {
     }
   };
 
+  // 🔹 Verify Registration OTP
   const handleOtp = async (e) => {
     e.preventDefault();
     try {
@@ -93,15 +97,9 @@ const LoginPage = () => {
           setOtpAttempt(otpAttempt + 1);
         }
       } else {
-        const { data } = await axios.post(
-          backendUrl + "/api/auth/delete-user",
-          { email }
-        );
-        if (data.success) {
-          toast.error("Max attempt reached, Register again");
-        } else {
-          toast.error("Something went wrong");
-        }
+        
+        toast.error("Max attempt reached, Register again");
+        
         clearForm();
         setStep("form");
         setOtp("");
@@ -114,15 +112,104 @@ const LoginPage = () => {
     }
   };
 
+  // 🔹 Resend Registration OTP
   const resendOtp = async () => {
     try {
       setLoading(true);
+      const { data } = await axios.post(backendUrl + "/api/auth/resend-otp", {
+        email,
+      });
+      if (data.success) {
+        toast.success("OTP resent successfully!");
+        setTimer(20);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 Forgot Password: send OTP
+  const sendResetOtp = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
       const { data } = await axios.post(
-        backendUrl + "/api/auth/resend-otp",
+        backendUrl + "/api/auth/send-reset-otp",
         { email }
       );
       if (data.success) {
+        toast.success("OTP sent to email");
+        setState("VerifyResetOtp");
+        setTimer(30);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resendResetOtp  = async()=>{
+    try {
+      setLoading(true);
+      const { data } = await axios.post(backendUrl + "/api/auth/resend-reset-otp", {
+        email,
+      });
+      if (data.success) {
         toast.success("OTP resent successfully!");
+        setTimer(20);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+  // 🔹 Forgot Password: verify OTP
+  const verifyResetOtp = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const { data } = await axios.post(
+        backendUrl + "/api/auth/verify-reset-otp",
+        { email, otp }
+      );
+      if (data.success) {
+        toast.success("OTP verified");
+        setState("ResetPassword");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 Forgot Password: reset password
+  const resetPasswordHandler = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const { data } = await axios.post(backendUrl + "/api/auth/reset-password", {
+        email,
+        password: newPassword,
+      });
+      if (data.success) {
+        toast.success("Password reset successful, please login");
+        clearForm();
+        setOtp("");
+        setNewPassword("");
+        setState("Login");
       } else {
         toast.error(data.message);
       }
@@ -153,7 +240,13 @@ const LoginPage = () => {
 
   return (
     <div className="w-full h-[100dvh] relative">
-      <Silk speed={3} scale={1} color="#0165fc" noiseIntensity={1} rotation={0} />
+      <Silk
+        speed={3}
+        scale={1}
+        color="#0165fc"
+        noiseIntensity={1}
+        rotation={0}
+      />
 
       <div className="absolute inset-0 bg-transparent flex justify-center items-center">
         <div className="backdrop-blur-md bg-transparent px-10 py-10 rounded-3xl flex justify-center items-center flex-col hover:border-2 hover:border-white/25 relative">
@@ -168,8 +261,8 @@ const LoginPage = () => {
             </div>
           )}
 
-          {/* FORM STEP */}
-          {step === "form" && (
+          {/* FORM STEP (Login/Register) */}
+          {step === "form" && (state === "Login" || state === "Register") && (
             <form
               onSubmit={handleSubmit}
               className={`bg-transparent w-full md:w-[400px] ${
@@ -192,10 +285,22 @@ const LoginPage = () => {
                   <label className="flex flex-col bg-transparent text-white gap-2 mb-8">
                     Role
                     <div className="bg-transparent flex justify-center items-center gap-4 w-full">
-                      <div onClick={()=>setRole("Patient")} className={`border-2 border-white/25 py-3 bg-transparent rounded-xl w-full text-center cursor-pointer active:border-white ${role==="Patient" ? "bg-white/75 text-black":""} transition-all duration-150`}>
+                      <div
+                        onClick={() => setRole("Patient")}
+                        className={`border-2 border-white/25 py-3 bg-transparent rounded-xl w-full text-center cursor-pointer active:border-white ${
+                          role === "Patient" ? "bg-white/75 text-black" : ""
+                        } transition-all duration-150`}
+                      >
                         Patient
                       </div>
-                      <div onClick={()=>setRole("Doctor")} className={`border-2 border-white/25 py-3 bg-transparent rounded-xl w-full text-center cursor-pointer active:border-white ${role==="Doctor" ? "bg-white/75 text-black":""} transition-all duration-150`}>Doctor</div>
+                      <div
+                        onClick={() => setRole("Doctor")}
+                        className={`border-2 border-white/25 py-3 bg-transparent rounded-xl w-full text-center cursor-pointer active:border-white ${
+                          role === "Doctor" ? "bg-white/75 text-black" : ""
+                        } transition-all duration-150`}
+                      >
+                        Doctor
+                      </div>
                     </div>
                   </label>
                 </>
@@ -232,6 +337,16 @@ const LoginPage = () => {
                 </button>
               </div>
 
+              {/* Forgot Password */}
+              {state === "Login" && (
+                <p
+                  onClick={() => setState("ForgotPassword")}
+                  className="bg-transparent text-blue-600 cursor-pointer text-center mb-4"
+                >
+                  Forgot Password?
+                </p>
+              )}
+
               {/* Toggle login/register */}
               <div className="flex justify-center items-center gap-2 bg-transparent">
                 <p className="bg-transparent text-center text-white">
@@ -249,7 +364,7 @@ const LoginPage = () => {
             </form>
           )}
 
-          {/* OTP STEP */}
+          {/* OTP STEP (Register only) */}
           {step === "otp" && state === "Register" && (
             <form
               onSubmit={handleOtp}
@@ -283,15 +398,20 @@ const LoginPage = () => {
               <div className="w-full flex justify-between items-center bg-transparent">
                 <div className="bg-transparent flex justify-center items-center gap-2">
                   <button
-                  disabled={timer>0 || loading}
-                  onClick={resendOtp}
-                  className="disabled:text-blue-600 disabled:hidden text-white cursor-pointer bg-transparent"
-                >
-                  Resend OTP
-                </button>
-                <p className={`${timer>0 ? "":"hidden"} bg-transparent text-white `}>
-                  Resend OTP in {timer} sec
-                </p>
+                    disabled={timer > 0 || loading}
+                    onClick={resendOtp}
+                    type="button"
+                    className="disabled:text-blue-600 disabled:hidden text-white cursor-pointer bg-transparent"
+                  >
+                    Resend OTP
+                  </button>
+                  <p
+                    className={`${
+                      timer > 0 ? "" : "hidden"
+                    } bg-transparent text-white `}
+                  >
+                    Resend OTP in {timer} sec
+                  </p>
                 </div>
                 <p
                   onClick={() => setStep("form")}
@@ -300,6 +420,112 @@ const LoginPage = () => {
                   Back to Register
                 </p>
               </div>
+            </form>
+          )}
+
+          {/* Forgot Password - Step 1 (Send OTP) */}
+          {state === "ForgotPassword" && (
+            <form
+              onSubmit={sendResetOtp}
+              className="w-full md:w-[400px] bg-transparent"
+            >
+              <label className="flex flex-col text-white gap-2 mb-8 bg-transparent">
+                Enter your Email
+                <input
+                  onChange={(e) => setEmail(e.target.value)}
+                  value={email}
+                  type="email"
+                  className="bg-transparent rounded-xl border-2 border-white/25 p-3 outline-none focus:border-white"
+                  placeholder="Enter your email..."
+                />
+              </label>
+              <button
+                type="submit"
+                className="w-full text-white text-xl border-2 border-white/50 px-5 py-3 rounded-2xl hover:bg-white/75 hover:text-black transition-all duration-150 font-semibold"
+              >
+                Send OTP
+              </button>
+              <p
+                onClick={() => setState("Login")}
+                className="bg-transparent text-blue-600 cursor-pointer text-center mt-4"
+              >
+                Back to Login
+              </p>
+            </form>
+          )}
+
+          {/* Forgot Password - Step 2 (Verify OTP) */}
+          {state === "VerifyResetOtp" && (
+            <form
+              onSubmit={verifyResetOtp}
+              className="w-full md:w-[400px] bg-transparent"
+            >
+              <label className="flex flex-col text-white gap-2 mb-4 bg-transparent">
+                Enter OTP
+                <input
+                  onChange={(e) => setOtp(e.target.value)}
+                  value={otp}
+                  type="text"
+                  className="bg-transparent rounded-xl border-2 border-white/25 p-3 outline-none focus:border-white text-center"
+                  placeholder="000000"
+                />
+              </label>
+              <div className="w-full flex justify-between items-center bg-transparent mb-4">
+                <div className="bg-transparent flex justify-center items-center gap-2">
+                  <button
+                    disabled={timer > 0 || loading}
+                    onClick={resendResetOtp}
+                    type="button"
+                    className="disabled:text-blue-600 disabled:hidden text-white cursor-pointer bg-transparent"
+                  >
+                    Resend OTP
+                  </button>
+                  <p
+                    className={`${
+                      timer > 0 ? "" : "hidden"
+                    } bg-transparent text-white `}
+                  >
+                    Resend OTP in {timer} sec
+                  </p>
+                </div>
+                <p
+                  onClick={() => setStep("form")}
+                  className="bg-transparent text-blue-600 cursor-pointer"
+                >
+                  Back to Register
+                </p>
+              </div>
+              <button
+                type="submit"
+                className="w-full text-white text-xl border-2 border-white/50 px-5 py-3 rounded-2xl hover:bg-white/75 hover:text-black transition-all duration-150 font-semibold"
+              >
+                Verify OTP
+              </button>
+            </form>
+          )}
+
+          {/* Forgot Password - Step 3 (Reset Password) */}
+          {state === "ResetPassword" && (
+            <form
+              onSubmit={resetPasswordHandler}
+              className="w-full md:w-[400px] bg-transparent"
+            >
+              <label className="flex flex-col text-white gap-2 mb-8 bg-transparent">
+                New Password
+                <input
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  value={newPassword}
+                  type="password"
+                  className="bg-transparent rounded-xl border-2 border-white/25 p-3 outline-none focus:border-white"
+                  placeholder="Enter new password..."
+                />
+              </label>
+              <button
+                type="submit"
+                className="w-full text-white text-xl border-2 border-white/50 px-5 py-3 rounded-2xl hover:bg-white/75 hover:text-black transition-all duration-150 font-semibold"
+              >
+                Reset Password
+              </button>
             </form>
           )}
         </div>
