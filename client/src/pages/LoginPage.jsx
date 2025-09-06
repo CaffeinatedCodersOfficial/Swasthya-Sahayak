@@ -227,7 +227,7 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    isLoggedIn && userData && navigate("/");
+    isLoggedIn && userData && navigate("/home");
   }, [isLoggedIn, userData]);
 
   useEffect(() => {
@@ -300,6 +300,14 @@ const LoginPage = () => {
                         } transition-all duration-150`}
                       >
                         Doctor
+                      </div>
+                      <div
+                        onClick={() => setRole("Hospital")}
+                        className={`border-2 border-white/25 py-3 bg-transparent rounded-xl w-full text-center cursor-pointer active:border-white ${
+                          role === "Hospital" ? "bg-white/75 text-black" : ""
+                        } transition-all duration-150`}
+                      >
+                        Hospital
                       </div>
                     </div>
                   </label>
