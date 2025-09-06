@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import Silk from "../Backgrounds/Silk";
+import Aurora from "../Backgrounds/Aurora";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -239,17 +239,16 @@ const LoginPage = () => {
   }, [timer]);
 
   return (
-    <div className="w-full h-[100dvh] relative">
-      <Silk
-        speed={3}
-        scale={1}
-        color="#0165fc"
-        noiseIntensity={1}
-        rotation={0}
+    <div className="w-full h-[100dvh] relative bg-black">
+      <Aurora
+        colorStops={["#3A29FF", "#FF94B4", "#FF3232"]}
+        blend={0.5}
+        amplitude={1.0}
+        speed={0.5}
       />
 
       <div className="absolute inset-0 bg-transparent flex justify-center items-center">
-        <div className="backdrop-blur-md bg-transparent px-10 py-10 rounded-3xl flex justify-center items-center flex-col hover:border-2 hover:border-white/25 relative">
+        <div className="backdrop-blur-md bg-transparent px-10 py-10 rounded-3xl flex justify-center items-center flex-col border-2 border-white/25 relative">
           <h3 className="bg-transparent text-white text-3xl font-semibold mb-10">
             {state}
           </h3>
