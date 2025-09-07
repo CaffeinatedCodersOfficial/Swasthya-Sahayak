@@ -22,7 +22,7 @@ const pendingUserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["Patient", "Doctor", "Admin"],
+    enum: ["Patient", "Doctor", "Hospital"],
     default: "user",
   },
   otp: {

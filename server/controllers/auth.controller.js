@@ -130,6 +130,21 @@ export const login = async (req, res) => {
   }
 };
 
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({ success: true, message: "Logged Out" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
 export const verifyRegisterationOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -357,6 +372,14 @@ export const resetPassword = async (req, res) => {
       success: true,
       message: "OTP reset successfull, Please Login again.",
     });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export const isAuthenticated = async (req, res) => {
+  try {
+    return res.json({ success: true, message: "Authenticated" });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }

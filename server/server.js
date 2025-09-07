@@ -5,6 +5,8 @@ import "dotenv/config";
 import connectDB from "./configs/mongodb.config.js";
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
+import uploadRouter from "./routes/upload.routes.js";
+import hospitalRouter from "./routes/hospital.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -28,6 +30,8 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api", uploadRouter);
+app.use("/api/hospital", hospitalRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

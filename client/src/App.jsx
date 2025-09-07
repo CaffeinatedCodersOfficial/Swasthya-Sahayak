@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {Routes, Route, useLocation} from "react-router-dom"
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
@@ -10,11 +10,18 @@ import IntroPage from './pages/IntroPage'
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
+import PatientDashboard from './pages/PatientDashboard';
+import Hospitals from './pages/Hospitals';
+import HospitalDetail from './pages/HospitalDetails';
+import HospitalDashboard from './pages/HospitalDashboard';
+import HospitalForm from './pages/HospitalForm';
+import { AppContext } from './context/AppContext';
 
 const App = () => {
   const location = useLocation();
-
-  const hideNavbarRoutes = ["/", "/login"];
+  const {userData} = useContext(AppContext);
+  
+  const hideNavbarRoutes = ["/", "/login", "/hospital-form"];
   const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
 
   return (
@@ -39,6 +46,14 @@ const App = () => {
             </PublicRoute>
           }
         />
+        <Route
+          path="/hospital-form"
+          element={
+            <PublicRoute>
+              <HospitalForm />
+            </PublicRoute>
+          }
+        />
 
         {/* Protected Routes */}
         <Route
@@ -46,6 +61,30 @@ const App = () => {
           element={
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              {userData?.role==="Patient" ? <PatientDashboard /> : userData?.role==="Hospital"?<HospitalDashboard/> : ""}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/hospitals"
+          element={
+            <ProtectedRoute>
+              <Hospitals />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/hospitals/:hospitalname"
+          element={
+            <ProtectedRoute>
+              <HospitalDetail />
             </ProtectedRoute>
           }
         />

@@ -2,26 +2,21 @@ import { User } from "../models/user.model.js";
 
 export const getUserData = async (req, res) => {
   try {
-    const { userId } = req.user;
-    if (!userId) {
-      return res.json({
-        success: false,
-        message: "Not authorized, Login again.",
-      });
-    }
+    const { userId } = req.body;
 
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.json({ success: false, message: "User not found." });
     }
 
-    const data = {
+    const userData = {
       email: user.email,
       name: user.name,
       isVerified: user.isVerified,
+      role: user.role,
     };
 
-    res.json({ succss: true, userData: data });
+    res.json({ success: true, userData });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }

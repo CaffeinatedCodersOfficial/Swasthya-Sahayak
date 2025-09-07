@@ -1,4 +1,5 @@
-import React, { useContext } from "react";
+// components/PublicRoute.jsx
+import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 

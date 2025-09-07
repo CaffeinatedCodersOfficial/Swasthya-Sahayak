@@ -87,11 +87,20 @@ const LoginPage = () => {
         );
         if (data.success) {
           toast.success(data.message);
-          clearForm();
           setOtp("");
-          setState("Login");
           setStep("form");
           setOtpAttempt(1);
+          if (role === "Hospital") {
+            navigate("/hospital-form",{
+              state: {
+                name,
+                email
+              },}
+            );
+            location.reload();
+          } else {
+            setState("Login");
+          }
         } else {
           toast.error(data.message);
           setOtpAttempt(otpAttempt + 1);
