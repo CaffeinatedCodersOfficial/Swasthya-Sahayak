@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import Aurora from "../Backgrounds/Aurora";
+import { AppContext } from "../context/AppContext";
 
 const HospitalForm = () => {
+  const {backendUrl} = useContext(AppContext);
   const navigate = useNavigate();
   const location = useLocation();
   const { name, email } = location.state || {};
@@ -50,7 +52,7 @@ const HospitalForm = () => {
       });
 
       const { data } = await axios.post(
-        "http://localhost:4000/api/hospital/create",
+        backendUrl+ "/api/hospital/create",
         dataToSend,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
